@@ -1,0 +1,36 @@
+name: Deploy Electron App on Windows
+
+on:
+  push:
+    branches:
+      - main  # 触发条件：在main分支上的push事件
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest  # 使用最新的Windows运行环境
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'  # 使用Node.js的版本，根据需要调整
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Electron app
+      run: npm run build  # 确保你的npm脚本中有build命令
+
+    - name: Package Electron app with electron-builder
+      run: npm run package  # 确保你的npm脚本中有package命令，例如使用 electron-builder
+      env:
+        GH_TOKEN: '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'  # 使用GitHub Token进行认证（如果需要）
+
+    - name: Upload artifacts  # 上传构建产物到GitHub Actions的artifact中，以便后续可以下载或部署
+      uses: actions/upload-artifact@v2
+      with:
+        name: electron-app-windows  # 产物名称
+        path: dist/  # 构建产物的路径，根据实际情况调整
